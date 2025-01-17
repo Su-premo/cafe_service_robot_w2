@@ -1,0 +1,29 @@
+[0.638s] Invoking command in '/home/supreme/example_project_ws/src/example_project': PYTHONPATH=/home/supreme/example_project_ws/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/example_project build --build-base /home/supreme/example_project_ws/build/example_project/build install --record /home/supreme/example_project_ws/build/example_project/install.log --single-version-externally-managed install_data
+[0.896s] running egg_info
+[0.896s] writing ../../build/example_project/example_project.egg-info/PKG-INFO
+[0.897s] writing dependency_links to ../../build/example_project/example_project.egg-info/dependency_links.txt
+[0.897s] writing entry points to ../../build/example_project/example_project.egg-info/entry_points.txt
+[0.897s] writing requirements to ../../build/example_project/example_project.egg-info/requires.txt
+[0.897s] writing top-level names to ../../build/example_project/example_project.egg-info/top_level.txt
+[0.898s] reading manifest file '../../build/example_project/example_project.egg-info/SOURCES.txt'
+[0.899s] writing manifest file '../../build/example_project/example_project.egg-info/SOURCES.txt'
+[0.899s] running build
+[0.899s] running build_py
+[0.900s] copying example_project/customer_v4.py -> /home/supreme/example_project_ws/build/example_project/build/lib/example_project
+[0.900s] copying example_project/kitchen_v4.py -> /home/supreme/example_project_ws/build/example_project/build/lib/example_project
+[0.900s] running install
+[0.900s] running install_lib
+[0.901s] copying /home/supreme/example_project_ws/build/example_project/build/lib/example_project/customer_v4.py -> /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project
+[0.901s] copying /home/supreme/example_project_ws/build/example_project/build/lib/example_project/kitchen_v4.py -> /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project
+[0.901s] byte-compiling /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project/customer_v4.py to customer_v4.cpython-310.pyc
+[0.903s] byte-compiling /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project/kitchen_v4.py to kitchen_v4.cpython-310.pyc
+[0.904s] running install_data
+[0.904s] copying launch/example.launch.py -> /home/supreme/example_project_ws/install/example_project/share/example_project/launch
+[0.905s] running install_egg_info
+[0.906s] removing '/home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info' (and everything under it)
+[0.906s] Copying ../../build/example_project/example_project.egg-info to /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info
+[0.907s] running install_scripts
+[0.926s] Installing customer_v4 script to /home/supreme/example_project_ws/install/example_project/lib/example_project
+[0.926s] Installing kitchen_v4 script to /home/supreme/example_project_ws/install/example_project/lib/example_project
+[0.926s] writing list of installed files to '/home/supreme/example_project_ws/build/example_project/install.log'
+[0.951s] Invoked command in '/home/supreme/example_project_ws/src/example_project' returned '0': PYTHONPATH=/home/supreme/example_project_ws/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/example_project build --build-base /home/supreme/example_project_ws/build/example_project/build install --record /home/supreme/example_project_ws/build/example_project/install.log --single-version-externally-managed install_data

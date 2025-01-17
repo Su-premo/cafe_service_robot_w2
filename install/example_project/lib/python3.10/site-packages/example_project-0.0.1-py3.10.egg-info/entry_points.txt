@@ -1,0 +1,4 @@
+[console_scripts]
+customer_v4 = example_project.customer_v4:main
+kitchen_v4 = example_project.kitchen_v4:main
+
