@@ -1,0 +1,25 @@
+[0.965s] Invoking command in '/home/supreme/example_project_ws/src/example_project': PYTHONPATH=/home/supreme/example_project_ws/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/example_project build --build-base /home/supreme/example_project_ws/build/example_project/build install --record /home/supreme/example_project_ws/build/example_project/install.log --single-version-externally-managed install_data
+[1.237s] running egg_info
+[1.238s] writing ../../build/example_project/example_project.egg-info/PKG-INFO
+[1.238s] writing dependency_links to ../../build/example_project/example_project.egg-info/dependency_links.txt
+[1.239s] writing entry points to ../../build/example_project/example_project.egg-info/entry_points.txt
+[1.239s] writing requirements to ../../build/example_project/example_project.egg-info/requires.txt
+[1.239s] writing top-level names to ../../build/example_project/example_project.egg-info/top_level.txt
+[1.241s] reading manifest file '../../build/example_project/example_project.egg-info/SOURCES.txt'
+[1.242s] writing manifest file '../../build/example_project/example_project.egg-info/SOURCES.txt'
+[1.242s] running build
+[1.242s] running build_py
+[1.242s] copying example_project/kitchen_v4.py -> /home/supreme/example_project_ws/build/example_project/build/lib/example_project
+[1.243s] running install
+[1.243s] running install_lib
+[1.244s] copying /home/supreme/example_project_ws/build/example_project/build/lib/example_project/kitchen_v4.py -> /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project
+[1.245s] byte-compiling /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project/kitchen_v4.py to kitchen_v4.cpython-310.pyc
+[1.250s] running install_data
+[1.250s] running install_egg_info
+[1.252s] removing '/home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info' (and everything under it)
+[1.253s] Copying ../../build/example_project/example_project.egg-info to /home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info
+[1.254s] running install_scripts
+[1.277s] Installing customer_v4 script to /home/supreme/example_project_ws/install/example_project/lib/example_project
+[1.277s] Installing kitchen_v4 script to /home/supreme/example_project_ws/install/example_project/lib/example_project
+[1.277s] writing list of installed files to '/home/supreme/example_project_ws/build/example_project/install.log'
+[1.325s] Invoked command in '/home/supreme/example_project_ws/src/example_project' returned '0': PYTHONPATH=/home/supreme/example_project_ws/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/supreme/example_project_ws/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/example_project build --build-base /home/supreme/example_project_ws/build/example_project/build install --record /home/supreme/example_project_ws/build/example_project/install.log --single-version-externally-managed install_data

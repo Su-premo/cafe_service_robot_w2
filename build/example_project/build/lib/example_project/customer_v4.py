@@ -18,23 +18,27 @@ class TableOrderNode(Node):
     def __init__(self, table_number):
         super().__init__(f'table_order_node_{table_number}')
         self.publisher = self.create_publisher(String, 'table_orders', 10)
-        self.subscription = self.create_subscription(
-            String,
-            'kitchen_messages',
-            self.kitchen_message_callback,
-            10)
-        self.table_number = table_number
-        self.emit_signal = None
-        
-        # 원두 정보 가져오기
-        self.beans_data = self.get_beans_info()
-        self.get_logger().info(f'Beans data: {self.beans_data}')
 
-    def send_order(self, order):
+        self.table_number = table_number
+        # beans_data를 메서드 호출로 초기화
+        self.beans_data = self.get_beans_info()
+        self.subscription = self.create_subscription(String,
+        'kitchen_messages', self.kitchen_message_callback, 10)
+
+
+    def send_order(self, order_data):
         msg = String()
-        msg.data = f"테이블 {self.table_number}: {order}"
+        msg.data = f"테이블 {self.table_number}: {order_data}"
         self.publisher.publish(msg)
         self.get_logger().info(f'Published order: {msg.data}')
+
+    # def send_order(self, order_data):
+    #     # order_data는 딕셔너리 형태로 전달
+    #     msg = String()
+    #     # 딕셔너리를 문자열로 변환하여 전송
+    #     msg.data = f"{self.table_number}|{order_data['total_price']}|{order_data['orders']}"
+    #     self.publisher.publish(msg)
+    #     self.get_logger().info(f'Published order: {msg.data}')
 
     def kitchen_message_callback(self, msg):
         if self.emit_signal is not None:
@@ -49,12 +53,17 @@ class TableOrderNode(Node):
             with conn.cursor() as cur:
                 cur.execute("SELECT bean_name, price FROM beans")
                 beans_info = cur.fetchall()
-            return beans_info
+                
+                # 로깅 추가
+                self.get_logger().info(f"Beans info: {beans_info}")
+                
+                return beans_info
         except psycopg2.Error as e:
             self.get_logger().error(f"Error fetching beans info: {e}")
             return []
         finally:
             return_connection(conn)
+
 
 class MainWindow(QMainWindow):
     kitchen_message_signal = pyqtSignal(str)
@@ -72,41 +81,41 @@ class MainWindow(QMainWindow):
         self.order_counts = {}
 
     def setup_ui(self):
-        main_widget = QWidget()
-        self.setCentralWidget(main_widget)
-        main_layout = QVBoxLayout()
-        
-        header_layout = QHBoxLayout()
-        self.header_buttons = []
-        headers = ["인원수 입력", "에스프레소 주문", "선물 보내기"]
-        
-        for text in headers:
-            button = QPushButton(text)
-            button.setStyleSheet("""
-                QPushButton {
-                    background-color: gray;
-                    color: white;
-                    padding: 10px;
-                    border: none;
-                    font-size: 14px;
-                }
-            """)
-            self.header_buttons.append(button)
-            header_layout.addWidget(button)
-        
-        main_layout.addLayout(header_layout)
-        
-        self.stack_widget = QStackedWidget()
-        
-        self.stack_widget.addWidget(self.create_people_page())
-        self.stack_widget.addWidget(self.create_order_page())
-        self.stack_widget.addWidget(self.create_gift_page())
-        
-        main_layout.addWidget(self.stack_widget)
-        main_widget.setLayout(main_layout)
+            main_widget = QWidget()
+            self.setCentralWidget(main_widget)
+            main_layout = QVBoxLayout()
+            
+            header_layout = QHBoxLayout()
+            self.header_buttons = []
+            headers = ["인원수 입력", "에스프레소 주문"]  # "선물 보내기" 제거
+            
+            for text in headers:
+                button = QPushButton(text)
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: gray;
+                        color: white;
+                        padding: 10px;
+                        border: none;
+                        font-size: 14px;
+                    }
+                """)
+                self.header_buttons.append(button)
+                header_layout.addWidget(button)
+            
+            main_layout.addLayout(header_layout)
+            
+            self.stack_widget = QStackedWidget()
+            
+            self.stack_widget.addWidget(self.create_people_page())
+            self.stack_widget.addWidget(self.create_order_page())
+            # self.stack_widget.addWidget(self.create_gift_page())  # 이 줄 제거
+            
+            main_layout.addWidget(self.stack_widget)
+            main_widget.setLayout(main_layout)
 
-        for i, button in enumerate(self.header_buttons):
-            button.clicked.connect(lambda checked, index=i: self.change_page(index))
+            for i, button in enumerate(self.header_buttons):
+                button.clicked.connect(lambda checked, index=i: self.change_page(index))
 
     def create_people_page(self):
         page = QWidget()
@@ -142,11 +151,18 @@ class MainWindow(QMainWindow):
                 font-size: 16px;
             }
         """)
+        submit_btn.clicked.connect(self.confirm_people_count)
         center_layout.addWidget(submit_btn)
         
         layout.addLayout(center_layout)
         page.setLayout(layout)
         return page
+
+    def confirm_people_count(self):
+        people_count = self.people_spinbox.value()
+        QMessageBox.information(self, "인원수 확인", f"인원은 {people_count}명 입니다.")
+        self.change_page(1)  # 주문 페이지로 이동
+
 
     def create_order_page(self):
         page = QWidget()
@@ -225,47 +241,6 @@ class MainWindow(QMainWindow):
         page.setLayout(layout)
         return page
 
-    def create_gift_page(self):
-        page = QWidget()
-        layout = QVBoxLayout()
-        
-        center_layout = QVBoxLayout()
-        center_layout.setAlignment(Qt.AlignCenter)
-        
-        label = QLabel("선물을 보낼 테이블\n번호를 입력해주세요")
-        label.setStyleSheet("font-size: 20px;")
-        label.setAlignment(Qt.AlignCenter)
-        center_layout.addWidget(label)
-        
-        self.table_spinbox = QSpinBox()
-        self.table_spinbox.setMinimum(1)
-        self.table_spinbox.setMaximum(10)
-        self.table_spinbox.setValue(1)
-        self.table_spinbox.setFixedWidth(200)
-        self.table_spinbox.setStyleSheet("""
-            QSpinBox {
-                font-size: 16px;
-                padding: 5px;
-            }
-        """)
-        center_layout.addWidget(self.table_spinbox)
-        
-        submit_btn = QPushButton("입력하기")
-        submit_btn.setFixedWidth(200)
-        submit_btn.setStyleSheet("""
-            QPushButton {
-                background-color: gray;
-                color: white;
-                padding: 10px;
-                font-size: 16px;
-            }
-        """)
-        center_layout.addWidget(submit_btn)
-        
-        layout.addLayout(center_layout)
-        page.setLayout(layout)
-        return page
-
     def change_page(self, index):
         self.stack_widget.setCurrentIndex(index)
         
@@ -330,16 +305,42 @@ class MainWindow(QMainWindow):
         self.total_label.setText("합계: 0원")
 
     def place_order(self):
-        order = f"{self.people_spinbox.value()}명\n"
-        order += self.order_text.toPlainText()
-        self.node.send_order(order)
-        QMessageBox.information(self, "주문 완료", "주문이 전송되었습니다.")
-        self.reset_order()
+        try:
+            # 주문 정보 구성
+            order_lines = self.order_text.toPlainText().strip().split('\n')
+            total_price = int(self.total_label.text().replace("합계: ", "").replace("원", ""))
+            
+            order_data = {
+                'total_price': total_price,
+                'orders': order_lines,
+                'people_count': self.people_spinbox.value()
+            }
+            
+            # 노드를 통해 주문 전송
+            self.node.send_order(order_data)
+            
+            QMessageBox.information(self, "주문 완료", "주문이 전송되었습니다.")
+            self.reset_order()
+            
+        except Exception as e:
+            QMessageBox.warning(self, "주문 실패", f"주문 처리 중 오류가 발생했습니다: {str(e)}")
 
     def handle_kitchen_message(self, message):
-        action, table = message.split(',')
-        if action == "confirm_order" and int(table) == self.table_number:
-            QMessageBox.information(self, "주문 확인", "주문이 접수되었습니다.")
+        self.node.get_logger().info(f"Received kitchen message: {message}")
+        try:
+            action, table, *_ = message.split(',')
+            if action == "confirm_order" and int(table) == self.table_number:
+                QMessageBox.information(self, "주문 접수", "주문이 확정되었습니다.")
+        except ValueError:
+            self.node.get_logger().error(f"Invalid message format: {message}")
+
+
+    def reset_order(self):
+        self.order_text.clear()
+        self.total_label.setText("합계: 0원")
+        self.order_counts = {}
+
+
 
 def main(args=None):
     rclpy.init(args=args)

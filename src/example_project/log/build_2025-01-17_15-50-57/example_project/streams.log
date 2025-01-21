@@ -1,0 +1,51 @@
+[0.378s] Invoking command in '/home/rokey/Desktop/example_project_ws/src/example_project': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/example_project build --build-base /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build install --record /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/install.log --single-version-externally-managed install_data
+[0.536s] running egg_info
+[0.537s] creating build/example_project/example_project.egg-info
+[0.537s] writing build/example_project/example_project.egg-info/PKG-INFO
+[0.537s] writing dependency_links to build/example_project/example_project.egg-info/dependency_links.txt
+[0.537s] writing entry points to build/example_project/example_project.egg-info/entry_points.txt
+[0.537s] writing requirements to build/example_project/example_project.egg-info/requires.txt
+[0.537s] writing top-level names to build/example_project/example_project.egg-info/top_level.txt
+[0.537s] writing manifest file 'build/example_project/example_project.egg-info/SOURCES.txt'
+[0.538s] reading manifest file 'build/example_project/example_project.egg-info/SOURCES.txt'
+[0.539s] writing manifest file 'build/example_project/example_project.egg-info/SOURCES.txt'
+[0.539s] running build
+[0.539s] running build_py
+[0.539s] creating /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build
+[0.539s] creating /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib
+[0.539s] creating /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project
+[0.539s] copying example_project/kitchen_v4.py -> /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project
+[0.539s] copying example_project/db_utils.py -> /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project
+[0.539s] copying example_project/__init__.py -> /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project
+[0.539s] copying example_project/customer_v4.py -> /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project
+[0.539s] running install
+[0.539s] running install_lib
+[0.540s] creating /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project
+[0.540s] copying /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project/kitchen_v4.py -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project
+[0.540s] copying /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project/db_utils.py -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project
+[0.540s] copying /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project/__init__.py -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project
+[0.540s] copying /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build/lib/example_project/customer_v4.py -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project
+[0.540s] byte-compiling /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project/kitchen_v4.py to kitchen_v4.cpython-310.pyc
+[0.542s] byte-compiling /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project/db_utils.py to db_utils.cpython-310.pyc
+[0.542s] byte-compiling /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project/__init__.py to __init__.cpython-310.pyc
+[0.542s] byte-compiling /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project/customer_v4.py to customer_v4.cpython-310.pyc
+[0.543s] running install_data
+[0.543s] creating /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/ament_index
+[0.543s] creating /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/ament_index/resource_index
+[0.544s] creating /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/ament_index/resource_index/packages
+[0.544s] copying resource/example_project -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/ament_index/resource_index/packages
+[0.544s] copying package.xml -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project
+[0.544s] creating /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/launch
+[0.544s] copying launch/example.launch.py -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/launch
+[0.544s] creating /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/images
+[0.544s] copying images/kenya.jpg -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/images
+[0.544s] copying images/costarica.jpg -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/images
+[0.544s] copying images/colombia.jpg -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/images
+[0.544s] copying images/guatemala.jpg -> /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/share/example_project/images
+[0.544s] running install_egg_info
+[0.545s] Copying build/example_project/example_project.egg-info to /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info
+[0.545s] running install_scripts
+[0.559s] Installing customer_v4 script to /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/example_project
+[0.559s] Installing kitchen_v4 script to /home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/example_project
+[0.559s] writing list of installed files to '/home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/install.log'
+[0.574s] Invoked command in '/home/rokey/Desktop/example_project_ws/src/example_project' returned '0': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/example_project/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/example_project build --build-base /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/build install --record /home/rokey/Desktop/example_project_ws/src/example_project/build/example_project/install.log --single-version-externally-managed install_data

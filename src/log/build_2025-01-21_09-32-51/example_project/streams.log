@@ -1,0 +1,22 @@
+[1.295s] Invoking command in '/home/rokey/Desktop/example_project_ws/src/example_project': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/example_project build --build-base /home/rokey/Desktop/example_project_ws/src/build/example_project/build install --record /home/rokey/Desktop/example_project_ws/src/build/example_project/install.log --single-version-externally-managed install_data
+[1.623s] running egg_info
+[1.624s] writing ../build/example_project/example_project.egg-info/PKG-INFO
+[1.625s] writing dependency_links to ../build/example_project/example_project.egg-info/dependency_links.txt
+[1.625s] writing entry points to ../build/example_project/example_project.egg-info/entry_points.txt
+[1.625s] writing requirements to ../build/example_project/example_project.egg-info/requires.txt
+[1.625s] writing top-level names to ../build/example_project/example_project.egg-info/top_level.txt
+[1.627s] reading manifest file '../build/example_project/example_project.egg-info/SOURCES.txt'
+[1.629s] writing manifest file '../build/example_project/example_project.egg-info/SOURCES.txt'
+[1.629s] running build
+[1.629s] running build_py
+[1.630s] running install
+[1.630s] running install_lib
+[1.631s] running install_data
+[1.631s] running install_egg_info
+[1.633s] removing '/home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info' (and everything under it)
+[1.633s] Copying ../build/example_project/example_project.egg-info to /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info
+[1.634s] running install_scripts
+[1.661s] Installing customer_v4 script to /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/example_project
+[1.661s] Installing kitchen_v4 script to /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/example_project
+[1.662s] writing list of installed files to '/home/rokey/Desktop/example_project_ws/src/build/example_project/install.log'
+[1.717s] Invoked command in '/home/rokey/Desktop/example_project_ws/src/example_project' returned '0': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/example_project build --build-base /home/rokey/Desktop/example_project_ws/src/build/example_project/build install --record /home/rokey/Desktop/example_project_ws/src/build/example_project/install.log --single-version-externally-managed install_data

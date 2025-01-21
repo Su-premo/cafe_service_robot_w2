@@ -1,0 +1,21 @@
+[1.235s] Invoking command in '/home/rokey/Desktop/example_project_ws/src/move_robot': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/move_robot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/move_robot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/move_robot build --build-base /home/rokey/Desktop/example_project_ws/src/build/move_robot/build install --record /home/rokey/Desktop/example_project_ws/src/build/move_robot/install.log --single-version-externally-managed install_data
+[1.579s] running egg_info
+[1.580s] writing ../build/move_robot/move_robot.egg-info/PKG-INFO
+[1.580s] writing dependency_links to ../build/move_robot/move_robot.egg-info/dependency_links.txt
+[1.580s] writing entry points to ../build/move_robot/move_robot.egg-info/entry_points.txt
+[1.580s] writing requirements to ../build/move_robot/move_robot.egg-info/requires.txt
+[1.580s] writing top-level names to ../build/move_robot/move_robot.egg-info/top_level.txt
+[1.583s] reading manifest file '../build/move_robot/move_robot.egg-info/SOURCES.txt'
+[1.584s] writing manifest file '../build/move_robot/move_robot.egg-info/SOURCES.txt'
+[1.584s] running build
+[1.584s] running build_py
+[1.584s] running install
+[1.585s] running install_lib
+[1.586s] running install_data
+[1.586s] copying launch/cafe.launch.py -> /home/rokey/Desktop/example_project_ws/src/install/move_robot/share/move_robot/launch
+[1.586s] running install_egg_info
+[1.589s] removing '/home/rokey/Desktop/example_project_ws/src/install/move_robot/lib/python3.10/site-packages/move_robot-0.0.0-py3.10.egg-info' (and everything under it)
+[1.589s] Copying ../build/move_robot/move_robot.egg-info to /home/rokey/Desktop/example_project_ws/src/install/move_robot/lib/python3.10/site-packages/move_robot-0.0.0-py3.10.egg-info
+[1.590s] running install_scripts
+[1.617s] writing list of installed files to '/home/rokey/Desktop/example_project_ws/src/build/move_robot/install.log'
+[1.664s] Invoked command in '/home/rokey/Desktop/example_project_ws/src/move_robot' returned '0': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/move_robot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/move_robot/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/move_robot build --build-base /home/rokey/Desktop/example_project_ws/src/build/move_robot/build install --record /home/rokey/Desktop/example_project_ws/src/build/move_robot/install.log --single-version-externally-managed install_data

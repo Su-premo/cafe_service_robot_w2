@@ -1,0 +1,345 @@
+import sys
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QMessageBox,
+                           QHBoxLayout, QLabel, QPushButton, QTextEdit, QStackedWidget, QSpinBox, QLineEdit)
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPixmap, QImage
+from ament_index_python.packages import get_package_share_directory
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import String
+import threading
+import signal
+import os
+# ---------- DB ---------------
+import psycopg2
+from example_project.example_project.db_utils import get_connection, return_connection 
+
+class TableOrderNode(Node):
+    def __init__(self, table_number):
+        super().__init__(f'table_order_node_{table_number}')
+        self.publisher = self.create_publisher(String, 'table_orders', 10)
+        self.subscription = self.create_subscription(
+            String,
+            'kitchen_messages',
+            self.kitchen_message_callback,
+            10)
+        self.table_number = table_number
+        self.emit_signal = None
+        
+        # 원두 정보 가져오기
+        self.beans_data = self.get_beans_info()
+        self.get_logger().info(f'Beans data: {self.beans_data}')
+
+    def send_order(self, order):
+        msg = String()
+        msg.data = f"테이블 {self.table_number}: {order}"
+        self.publisher.publish(msg)
+        self.get_logger().info(f'Published order: {msg.data}')
+
+    def kitchen_message_callback(self, msg):
+        if self.emit_signal is not None:
+            self.emit_signal(msg.data)
+
+    def set_emit_signal(self, emit_func):
+        self.emit_signal = emit_func
+
+    def get_beans_info(self):
+        conn = get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT bean_name, price FROM beans")
+                beans_info = cur.fetchall()
+            return beans_info
+        except psycopg2.Error as e:
+            self.get_logger().error(f"Error fetching beans info: {e}")
+            return []
+        finally:
+            return_connection(conn)
+
+class MainWindow(QMainWindow):
+    kitchen_message_signal = pyqtSignal(str)
+
+    def __init__(self, node, table_number):
+        super().__init__()
+        self.node = node
+        self.table_number = table_number
+        self.setWindowTitle(f"테이블 {table_number} 주문 시스템")
+        self.setGeometry(100, 100, 1200, 800)
+        
+        self.setup_ui()
+        self.kitchen_message_signal.connect(self.handle_kitchen_message)
+        node.set_emit_signal(self.kitchen_message_signal.emit)
+
+
+    def setup_ui(self):
+        main_widget = QWidget()
+        self.setCentralWidget(main_widget)
+        main_layout = QVBoxLayout()
+        
+        header_layout = QHBoxLayout()
+        self.header_buttons = []
+        headers = ["인원수 입력", "에스프레소 주문", "선물 보내기"]
+        
+        for text in headers:
+            button = QPushButton(text)
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: gray;
+                    color: white;
+                    padding: 10px;
+                    border: none;
+                    font-size: 14px;
+                }
+            """)
+            self.header_buttons.append(button)
+            header_layout.addWidget(button)
+        
+        main_layout.addLayout(header_layout)
+        
+        self.stack_widget = QStackedWidget()
+        
+        self.stack_widget.addWidget(self.create_people_page())
+        self.stack_widget.addWidget(self.create_order_page())
+        self.stack_widget.addWidget(self.create_gift_page())
+        
+        main_layout.addWidget(self.stack_widget)
+        main_widget.setLayout(main_layout)
+
+        for i, button in enumerate(self.header_buttons):
+            button.clicked.connect(lambda checked, index=i: self.change_page(index))
+
+    def create_people_page(self):
+        page = QWidget()
+        layout = QVBoxLayout()
+        
+        center_layout = QVBoxLayout()
+        center_layout.setAlignment(Qt.AlignCenter)
+        
+        label = QLabel("인원수를 입력해주세요")
+        label.setStyleSheet("font-size: 20px;")
+        center_layout.addWidget(label)
+        
+        self.people_spinbox = QSpinBox()
+        self.people_spinbox.setMinimum(1)
+        self.people_spinbox.setMaximum(10)
+        self.people_spinbox.setValue(1)
+        self.people_spinbox.setFixedWidth(200)
+        self.people_spinbox.setStyleSheet("""
+            QSpinBox {
+                font-size: 16px;
+                padding: 5px;
+            }
+        """)
+        center_layout.addWidget(self.people_spinbox)
+        
+        submit_btn = QPushButton("입력하기")
+        submit_btn.setFixedWidth(200)
+        submit_btn.setStyleSheet("""
+            QPushButton {
+                background-color: gray;
+                color: white;
+                padding: 10px;
+                font-size: 16px;
+            }
+        """)
+        center_layout.addWidget(submit_btn)
+        
+        layout.addLayout(center_layout)
+        page.setLayout(layout)
+        return page
+
+    def create_order_page(self):
+        page = QWidget()
+        layout = QVBoxLayout()
+        coffee_layout = QHBoxLayout()
+        # 하드코딩된 이미지 파일 이름과 원두 이름을 매핑하는 리스트
+        coffee_types = {
+            "과테말라 안티구아": "guatemala.jpg",
+            "콜롬비아 수프리모": "colombia.jpg",
+            "케냐 AA": "kenya.jpg",
+            "코스타리카 따라주": "costarica.jpg"
+        }
+        # ROS2 패키지 경로 가져오기
+        package_path = get_package_share_directory('example_project')
+        images_path = os.path.join(package_path, 'images')
+        print(f"Package path: {package_path}")
+        print(f"Images path: {images_path}")
+        # DB에서 원두 정보를 가져옵니다.
+        beans_data = self.node.beans_data  # DB에서 가져온 원두 정보
+        for bean in beans_data:
+            coffee_name = bean[0]  # DB에서 가져온 원두 이름
+            price = bean[1]  # DB에서 가져온 가격
+            image_file = coffee_types.get(coffee_name)  # 이미지 파일 이름 가져오기
+            coffee_widget = QWidget()
+            coffee_v_layout = QVBoxLayout()
+            image_label = QLabel()
+            if image_file:  # 이미지 파일이 존재하는 경우
+                image_path = os.path.join(images_path, image_file)
+                print(f"Looking for image at: {image_path}")
+                pixmap = QPixmap(image_path)
+                if not pixmap.isNull():
+                    scaled_pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    image_label.setPixmap(scaled_pixmap)
+                    image_label.setAlignment(Qt.AlignCenter)
+                else:
+                    image_label.setText(f"이미지를 찾을 수 없습니다\n{image_path}")
+            else:
+                image_label.setText("이미지 파일이 없습니다.")
+            coffee_v_layout.addWidget(image_label)
+            # 커피 이름과 가격 표시
+            name_label1 = QLabel(f"{coffee_name}")
+            name_label2 = QLabel(f"{price}원")  # 가격 추가
+            name_label1.setAlignment(Qt.AlignCenter)
+            name_label2.setAlignment(Qt.AlignCenter)
+            coffee_v_layout.addWidget(name_label1)
+            coffee_v_layout.addWidget(name_label2)
+            coffee_btn = QPushButton("선택")
+            coffee_btn.clicked.connect(lambda checked, c=coffee_name: self.add_to_order(c))
+            coffee_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: gray;
+                    color: white;
+                    padding: 10px;
+                }
+            """)
+            coffee_v_layout.addWidget(coffee_btn)
+            coffee_widget.setLayout(coffee_v_layout)
+            coffee_layout.addWidget(coffee_widget)
+        layout.addLayout(coffee_layout)
+        # 주문 내역 및 버튼
+        order_layout = QVBoxLayout()
+        self.order_text = QTextEdit()
+        self.order_text.setReadOnly(True)
+        order_layout.addWidget(self.order_text)
+        self.total_label = QLabel("합계: 0원")
+        order_layout.addWidget(self.total_label)
+        button_layout = QHBoxLayout()
+        reset_btn = QPushButton("초기화")
+        reset_btn.clicked.connect(self.reset_order)
+        order_btn = QPushButton("주문하기")
+        order_btn.clicked.connect(self.place_order)
+        button_layout.addWidget(reset_btn)
+        button_layout.addWidget(order_btn)
+        order_layout.addLayout(button_layout)
+        layout.addLayout(order_layout)
+        page.setLayout(layout)
+        return page
+
+    def create_gift_page(self):
+        page = QWidget()
+        layout = QVBoxLayout()
+        
+        center_layout = QVBoxLayout()
+        center_layout.setAlignment(Qt.AlignCenter)
+        
+        label = QLabel("선물을 보낼 테이블\n번호를 입력해주세요")
+        label.setStyleSheet("font-size: 20px;")
+        label.setAlignment(Qt.AlignCenter)
+        center_layout.addWidget(label)
+        
+        self.table_spinbox = QSpinBox()
+        self.table_spinbox.setMinimum(1)
+        self.table_spinbox.setMaximum(10)
+        self.table_spinbox.setValue(1)
+        self.table_spinbox.setFixedWidth(200)
+        self.table_spinbox.setStyleSheet("""
+            QSpinBox {
+                font-size: 16px;
+                padding: 5px;
+            }
+        """)
+        center_layout.addWidget(self.table_spinbox)
+        
+        submit_btn = QPushButton("입력하기")
+        submit_btn.setFixedWidth(200)
+        submit_btn.setStyleSheet("""
+            QPushButton {
+                background-color: gray;
+                color: white;
+                padding: 10px;
+                font-size: 16px;
+            }
+        """)
+        center_layout.addWidget(submit_btn)
+        
+        layout.addLayout(center_layout)
+        page.setLayout(layout)
+        return page
+
+    def change_page(self, index):
+        self.stack_widget.setCurrentIndex(index)
+        
+        for i, button in enumerate(self.header_buttons):
+            if i == index:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: darkgray;
+                        color: white;
+                        padding: 10px;
+                        border: none;
+                        font-size: 14px;
+                    }
+                """)
+            else:
+                button.setStyleSheet("""
+                    QPushButton {
+                        background-color: gray;
+                        color: white;
+                        padding: 10px;
+                        border: none;
+                        font-size: 14px;
+                    }
+                """)
+
+    def add_to_order(self, coffee):
+        current_text = self.order_text.toPlainText()
+        self.order_text.setPlainText(current_text + coffee + "\n")
+        self.update_total()
+
+    def update_total(self):
+        price= self.node.beans_data[1]  # DB에서 가져온 원두 정보
+        lines = self.order_text.toPlainText().split("\n")
+        total = len([line for line in lines if line]) * price
+        self.total_label.setText(f"합계: {total}원")
+
+    def reset_order(self):
+        self.order_text.clear()
+        self.total_label.setText("합계: 0원")
+
+    def place_order(self):
+        order = f"{self.people_spinbox.value()}명\n"
+        order += self.order_text.toPlainText()
+        self.node.send_order(order)
+        QMessageBox.information(self, "주문 완료", "주문이 전송되었습니다.")
+        self.reset_order()
+
+    def handle_kitchen_message(self, message):
+        action, table = message.split(',')
+        if action == "confirm_order" and int(table) == self.table_number:
+            QMessageBox.information(self, "주문 확인", "주문이 접수되었습니다.")
+
+def main(args=None):
+    rclpy.init(args=args)
+    table_number = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    node = TableOrderNode(table_number)
+    app = QApplication(sys.argv)
+    window = MainWindow(node, table_number)
+    
+    def run_ros():
+        rclpy.spin(node)
+        node.destroy_node()
+        rclpy.shutdown()
+
+    thread = threading.Thread(target=run_ros, daemon=True)
+    thread.start()
+
+    window.show()
+    
+    try:
+        sys.exit(app.exec_())
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,33 @@
+running egg_info
+creating ../build/cafe_project/cafe_project.egg-info
+writing ../build/cafe_project/cafe_project.egg-info/PKG-INFO
+writing dependency_links to ../build/cafe_project/cafe_project.egg-info/dependency_links.txt
+writing entry points to ../build/cafe_project/cafe_project.egg-info/entry_points.txt
+writing requirements to ../build/cafe_project/cafe_project.egg-info/requires.txt
+writing top-level names to ../build/cafe_project/cafe_project.egg-info/top_level.txt
+writing manifest file '../build/cafe_project/cafe_project.egg-info/SOURCES.txt'
+reading manifest file '../build/cafe_project/cafe_project.egg-info/SOURCES.txt'
+writing manifest file '../build/cafe_project/cafe_project.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build
+creating /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib
+creating /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib/cafe_project
+copying cafe_project/__init__.py -> /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib/cafe_project
+running install
+running install_lib
+creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project
+copying /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib/cafe_project/__init__.py -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project
+byte-compiling /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project/__init__.py to __init__.cpython-310.pyc
+running install_data
+creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index
+creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index/resource_index
+creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index/resource_index/packages
+copying resource/cafe_project -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index/resource_index/packages
+copying package.xml -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/cafe_project
+creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/cafe_project/launch
+copying launch/cafe.launch.py -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/cafe_project/launch
+running install_egg_info
+Copying ../build/cafe_project/cafe_project.egg-info to /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project-0.0.0-py3.10.egg-info
+running install_scripts
+writing list of installed files to '/home/rokey/Desktop/example_project_ws/src/build/cafe_project/install.log'

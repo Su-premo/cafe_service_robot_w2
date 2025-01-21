@@ -1,0 +1,35 @@
+[1.300s] Invoking command in '/home/rokey/Desktop/example_project_ws/src/move_the_robot': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/cafe_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/cafe_project build --build-base /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build install --record /home/rokey/Desktop/example_project_ws/src/build/cafe_project/install.log --single-version-externally-managed install_data
+[1.639s] running egg_info
+[1.641s] creating ../build/cafe_project/cafe_project.egg-info
+[1.641s] writing ../build/cafe_project/cafe_project.egg-info/PKG-INFO
+[1.642s] writing dependency_links to ../build/cafe_project/cafe_project.egg-info/dependency_links.txt
+[1.642s] writing entry points to ../build/cafe_project/cafe_project.egg-info/entry_points.txt
+[1.643s] writing requirements to ../build/cafe_project/cafe_project.egg-info/requires.txt
+[1.643s] writing top-level names to ../build/cafe_project/cafe_project.egg-info/top_level.txt
+[1.643s] writing manifest file '../build/cafe_project/cafe_project.egg-info/SOURCES.txt'
+[1.646s] reading manifest file '../build/cafe_project/cafe_project.egg-info/SOURCES.txt'
+[1.647s] writing manifest file '../build/cafe_project/cafe_project.egg-info/SOURCES.txt'
+[1.648s] running build
+[1.648s] running build_py
+[1.648s] creating /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build
+[1.648s] creating /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib
+[1.648s] creating /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib/cafe_project
+[1.648s] copying cafe_project/__init__.py -> /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib/cafe_project
+[1.649s] running install
+[1.650s] running install_lib
+[1.651s] creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project
+[1.651s] copying /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build/lib/cafe_project/__init__.py -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project
+[1.652s] byte-compiling /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project/__init__.py to __init__.cpython-310.pyc
+[1.652s] running install_data
+[1.652s] creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index
+[1.652s] creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index/resource_index
+[1.652s] creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index/resource_index/packages
+[1.652s] copying resource/cafe_project -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/ament_index/resource_index/packages
+[1.653s] copying package.xml -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/cafe_project
+[1.653s] creating /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/cafe_project/launch
+[1.653s] copying launch/cafe.launch.py -> /home/rokey/Desktop/example_project_ws/src/install/cafe_project/share/cafe_project/launch
+[1.653s] running install_egg_info
+[1.655s] Copying ../build/cafe_project/cafe_project.egg-info to /home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages/cafe_project-0.0.0-py3.10.egg-info
+[1.656s] running install_scripts
+[1.685s] writing list of installed files to '/home/rokey/Desktop/example_project_ws/src/build/cafe_project/install.log'
+[1.727s] Invoked command in '/home/rokey/Desktop/example_project_ws/src/move_the_robot' returned '0': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/cafe_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/cafe_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/cafe_project build --build-base /home/rokey/Desktop/example_project_ws/src/build/cafe_project/build install --record /home/rokey/Desktop/example_project_ws/src/build/cafe_project/install.log --single-version-externally-managed install_data

@@ -1,0 +1,28 @@
+[1.268s] Invoking command in '/home/rokey/Desktop/example_project_ws/src/example_project': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/example_project build --build-base /home/rokey/Desktop/example_project_ws/src/build/example_project/build install --record /home/rokey/Desktop/example_project_ws/src/build/example_project/install.log --single-version-externally-managed install_data
+[1.605s] running egg_info
+[1.606s] writing ../build/example_project/example_project.egg-info/PKG-INFO
+[1.606s] writing dependency_links to ../build/example_project/example_project.egg-info/dependency_links.txt
+[1.607s] writing entry points to ../build/example_project/example_project.egg-info/entry_points.txt
+[1.607s] writing requirements to ../build/example_project/example_project.egg-info/requires.txt
+[1.607s] writing top-level names to ../build/example_project/example_project.egg-info/top_level.txt
+[1.609s] reading manifest file '../build/example_project/example_project.egg-info/SOURCES.txt'
+[1.611s] writing manifest file '../build/example_project/example_project.egg-info/SOURCES.txt'
+[1.611s] running build
+[1.611s] running build_py
+[1.611s] copying example_project/kitchen_v4.py -> /home/rokey/Desktop/example_project_ws/src/build/example_project/build/lib/example_project
+[1.611s] copying example_project/customer_v4.py -> /home/rokey/Desktop/example_project_ws/src/build/example_project/build/lib/example_project
+[1.612s] running install
+[1.612s] running install_lib
+[1.613s] copying /home/rokey/Desktop/example_project_ws/src/build/example_project/build/lib/example_project/kitchen_v4.py -> /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project
+[1.613s] copying /home/rokey/Desktop/example_project_ws/src/build/example_project/build/lib/example_project/customer_v4.py -> /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project
+[1.614s] byte-compiling /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project/kitchen_v4.py to kitchen_v4.cpython-310.pyc
+[1.617s] byte-compiling /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project/customer_v4.py to customer_v4.cpython-310.pyc
+[1.620s] running install_data
+[1.620s] running install_egg_info
+[1.622s] removing '/home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info' (and everything under it)
+[1.623s] Copying ../build/example_project/example_project.egg-info to /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages/example_project-0.0.1-py3.10.egg-info
+[1.623s] running install_scripts
+[1.650s] Installing customer_v4 script to /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/example_project
+[1.651s] Installing kitchen_v4 script to /home/rokey/Desktop/example_project_ws/src/install/example_project/lib/example_project
+[1.651s] writing list of installed files to '/home/rokey/Desktop/example_project_ws/src/build/example_project/install.log'
+[1.686s] Invoked command in '/home/rokey/Desktop/example_project_ws/src/example_project' returned '0': PYTHONPATH=/home/rokey/Desktop/example_project_ws/src/build/example_project/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/rokey/Desktop/example_project_ws/src/install/example_project/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/example_project build --build-base /home/rokey/Desktop/example_project_ws/src/build/example_project/build install --record /home/rokey/Desktop/example_project_ws/src/build/example_project/install.log --single-version-externally-managed install_data

@@ -12,7 +12,6 @@ example_project/__init__.py
 example_project/customer_v4.py
 example_project/db_utils.py
 example_project/kitchen_v4.py
-images/KIMBAB.jpg
 images/colombia.jpg
 images/costarica.jpg
 images/guatemala.jpg
