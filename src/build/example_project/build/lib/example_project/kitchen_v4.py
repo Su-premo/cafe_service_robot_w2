@@ -53,6 +53,7 @@ class KitchenOrderNode(Node):
     def set_emit_signal(self, emit_func):
         self.emit_signal = emit_func    
 
+    ## cafe_tables -------------------------------------------------------------
     def get_cafe_tables_info(self):
         conn = get_connection()
         try:
@@ -66,59 +67,222 @@ class KitchenOrderNode(Node):
         finally:
             return_connection(conn)
 
+    def get_table_info(self, table_id):
+        conn = get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT customer_num, capacity 
+                    FROM cafe_tables 
+                    WHERE table_id = %s
+                """, (table_id,))
+                return cur.fetchone()
+        except psycopg2.Error as e:
+            self.log_error(f"Error fetching table info: {e}")
+            return None
+        finally:
+            return_connection(conn)
+
+    # 착석 인원 컬럼 업데이트
+    def update_customer_num(self, table_id, customer_num):
+        conn = get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE cafe_tables 
+                    SET customer_num = %s 
+                    WHERE table_id = %s
+                """, (customer_num, table_id))
+                conn.commit()
+                self.get_logger().info(f"Updated customer_num for table {table_id} to {customer_num}")
+        except psycopg2.Error as e:
+            self.get_logger().error(f"Error updating customer number: {e}")
+            conn.rollback()
+        finally:
+            return_connection(conn)
+
+    def update_customer_num_to_zero(self, table_id):
+        conn = get_connection()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE cafe_tables 
+                    SET customer_num = 0 
+                    WHERE table_id = %s
+                """, (table_id,))
+                conn.commit()
+                self.get_logger().info(f"Updated customer_num for table {table_id} to 0")
+        except psycopg2.Error as e:
+            self.get_logger().error(f"Error updating customer number: {e}")
+            conn.rollback()
+        finally:
+            return_connection(conn)
+
+
+    def insert_order_details(self, order_id, orders):
+        conn = get_connection()
+        try:
+            with conn.cursor() as cur:
+                for item in orders:
+                    self.get_logger().info(f"Processing order item: {item}")  # 로그 추가
+                    try:
+                        # 'X' 또는 'x'로 분리 시도
+                        if ' X ' in item:
+                            bean_name, quantity = item.split(' X ')
+                        elif ' x ' in item:
+                            bean_name, quantity = item.split(' x ')
+                        else:
+                            self.get_logger().error(f"Invalid order format: {item}")
+                            continue
+
+                        quantity = int(quantity)
+                        
+                        # beans 테이블에서 bean_id와 price 조회
+                        cur.execute("""
+                            SELECT bean_id, price 
+                            FROM beans 
+                            WHERE bean_name = %s
+                        """, (bean_name,))
+                        
+                        bean_info = cur.fetchone()
+                        if bean_info:
+                            bean_id, price = bean_info
+                            subtotal = price * quantity
+                            
+                            cur.execute("""
+                                INSERT INTO order_details (order_id, bean_id, quantity, subtotal)
+                                VALUES (%s, %s, %s, %s)
+                            """, (order_id, bean_id, quantity, subtotal))
+                    except ValueError as e:
+                        self.get_logger().error(f"Error processing item {item}: {e}")
+                        continue
+                conn.commit()
+        except Exception as e:
+            self.get_logger().error(f"Error in insert_order_details: {e}")
+            conn.rollback()
+        finally:
+            return_connection(conn)
+
+
+    # 주문 확인 ------------------------------------------------------------------------------
+    def confirm_order(self, table):
+        try:
+            self.get_logger().info("=== Debug Information ===")
+            self.get_logger().info(f"Table number: {table}")
+            self.get_logger().info(f"Type of order_data_dict: {type(self.order_data_dict)}")
+            self.get_logger().info(f"Content of order_data_dict: {self.order_data_dict}")
+            
+            order_data = self.order_data_dict.get(table)
+            self.get_logger().info(f"Type of order_data: {type(order_data)}")
+            self.get_logger().info(f"Content of order_data: {order_data}")
+            
+            if not order_data:
+                return "주문이 없습니다."
+
+            # 데이터 구조 검증
+            if not isinstance(order_data, dict):
+                self.get_logger().error(f"Invalid order_data type: {type(order_data)}")
+                return "주문 데이터 형식이 올바르지 않습니다."
+
+            # 필수 키 존재 여부 확인
+            required_keys = ['total_price', 'people_count', 'orders']
+            missing_keys = [key for key in required_keys if key not in order_data]
+            if missing_keys:
+                self.get_logger().error(f"Missing required keys: {missing_keys}")
+                return f"주문 데이터에 필수 정보가 없습니다: {missing_keys}"
+
+            total_price = order_data['total_price']
+            people_count = order_data['people_count']
+
+            # 값 타입 검증
+            self.get_logger().info(f"total_price type: {type(total_price)}, value: {total_price}")
+            self.get_logger().info(f"people_count type: {type(people_count)}, value: {people_count}")
+
+            order_id = self.insert_order(order_data)
+            self.update_customer_num(table, people_count)
+
+            if order_id:
+                self.insert_order_details(order_id, order_data['orders'])
+                msg = String()
+                msg.data = f"confirm_order,{table},{total_price},{people_count}"
+                self.publisher.publish(msg)
+                return f"테이블 {table}의 주문이 확인되었습니다.\n총 가격: {total_price}원\n인원 수: {people_count}명"
+
+        except Exception as e:
+            self.get_logger().error(f"Error in confirm_order: {e}")
+            self.get_logger().error(f"Exception type: {type(e)}")
+            import traceback
+            self.get_logger().error(f"Traceback: {traceback.format_exc()}")
+            return f"주문 확인 실패: {str(e)}"
+
+    # orders ------------------------------------------------------------------------------
     def insert_order(self, order_data):
         conn = get_connection()
         try:
             with conn.cursor() as cur:
                 cur.execute("""
-                    INSERT INTO orders (
-                        table_ordered, 
-                        order_time, 
-                        total_price, 
-                        is_gifting, 
-                        table_served
-                    ) VALUES (
-                        %s, 
-                        NOW(), 
-                        %s, 
-                        FALSE, 
-                        %s
-                    ) RETURNING order_id
+                    INSERT INTO orders (table_ordered, order_time, total_price, is_gifting, table_served)
+                    VALUES (%s, %s, %s, %s, %s)
+                    RETURNING order_id
                 """, (
-                    order_data['table_number'], 
-                    order_data['total_price'], 
-                    order_data['table_number']
+                    order_data['table_number'],
+                    datetime.now(),
+                    order_data['total_price'],
+                    False,  # is_gifting
+                    order_data['table_number']  # table_served
                 ))
                 order_id = cur.fetchone()[0]
-            conn.commit()
-            return order_id
-        except psycopg2.Error as e:
-            self.get_logger().error(f"Error inserting order: {e}")
+                conn.commit()
+                return order_id
+        except Exception as e:
+            self.log_error(f"Error in insert_order: {e}")
+            conn.rollback()
+            return None
         finally:
             return_connection(conn)
 
-    def insert_order_details(self, order_id, order_items):
+    # order_details ---------------------------------------------------------------------
+    def insert_order_details(self, order_id, orders):
         conn = get_connection()
         try:
             with conn.cursor() as cur:
-                for item in order_items:
-                    bean_name, quantity = item.split(' X ')
-                    cur.execute("SELECT bean_id, price FROM beans WHERE bean_name = %s", (bean_name,))
-                    bean_info = cur.fetchone()
-                    if bean_info:
-                        bean_id, bean_price = bean_info
-                        subtotal = bean_price * int(quantity)
+                for item in orders:
+                    self.get_logger().info(f"Processing order item: {item}")  # 로그 추가
+                    try:
+                        # 'X' 또는 'x'로 분리 시도
+                        if ' X ' in item:
+                            bean_name, quantity = item.split(' X ')
+                        elif ' x ' in item:
+                            bean_name, quantity = item.split(' x ')
+                        else:
+                            self.get_logger().error(f"Invalid order format: {item}")
+                            continue
+
+                        quantity = int(quantity)
+                        
+                        # beans 테이블에서 bean_id와 price 조회
                         cur.execute("""
-                            INSERT INTO order_details (
-                                order_id, 
-                                bean_id, 
-                                quantity, 
-                                subtotal
-                            ) VALUES (%s, %s, %s, %s)
-                        """, (order_id, bean_id, int(quantity), subtotal))
-            conn.commit()
-        except psycopg2.Error as e:
-            self.get_logger().error(f"Error inserting order details: {e}")
+                            SELECT bean_id, price 
+                            FROM beans 
+                            WHERE bean_name = %s
+                        """, (bean_name,))
+                        
+                        bean_info = cur.fetchone()
+                        if bean_info:
+                            bean_id, price = bean_info
+                            subtotal = price * quantity
+                            
+                            cur.execute("""
+                                INSERT INTO order_details (order_id, bean_id, quantity, subtotal)
+                                VALUES (%s, %s, %s, %s)
+                            """, (order_id, bean_id, quantity, subtotal))
+                    except ValueError as e:
+                        self.get_logger().error(f"Error processing item {item}: {e}")
+                        continue
+                conn.commit()
+        except Exception as e:
+            self.get_logger().error(f"Error in insert_order_details: {e}")
+            conn.rollback()
         finally:
             return_connection(conn)
 
@@ -151,34 +315,6 @@ class KitchenOrderNode(Node):
         self.get_logger().info(f"Sending robot to table {table_number}")
         self.nav_client.send_goal_async(goal_msg)
 
-    def confirm_order(self, table):
-        try:
-            self.get_logger().info(f"Current order_data_dict: {self.order_data_dict}")
-            
-            order_data = self.order_data_dict.get(table)
-            
-            self.get_logger().info(f"Order data for table {table}: {order_data}")
-            
-            if not order_data:
-                return "주문이 없습니다."
-
-            total_price = order_data['total_price']
-            people_count = order_data['people_count']
-
-            order_id = self.insert_order(order_data)
-
-            if order_id:
-                self.insert_order_details(order_id, order_data['orders'])
-                msg = String()
-                msg.data = f"confirm_order,{table},{total_price},{people_count}"
-                self.publisher.publish(msg)
-                
-                return f"테이블 {table}의 주문이 확인되었습니다.\n총 가격: {total_price}원\n인원 수: {people_count}명"
-
-        except Exception as e:
-            self.get_logger().error(f"Error in confirm_order: {e}")
-            return f"주문 확인 실패: {str(e)}"
-
     def complete_payment(self, table):
         msg = String()
         msg.data = f"complete_payment,{table}"
@@ -186,6 +322,7 @@ class KitchenOrderNode(Node):
         if table in self.order_data_dict:
             del self.order_data_dict[table]
 
+    # 일일 매출
     def get_daily_sales(self):
         conn = get_connection()
         try:
@@ -198,7 +335,7 @@ class KitchenOrderNode(Node):
                 daily_sales = cur.fetchone()[0]
             return daily_sales
         except psycopg2.Error as e:
-            self.get_logger().error(f"Error fetching daily sales: {e}")
+            self.log_error(f"Error fetching daily sales: {e}")
             return 0
         finally:
             return_connection(conn)
@@ -227,11 +364,10 @@ class MainWindow(QMainWindow):
 
     def __init__(self, node):
         super().__init__()
-        self.node = node
+        self.node: KitchenOrderNode = node
         self.setWindowTitle("주문 목록 화면")
         self.setGeometry(100, 100, 1200, 800)
-        
-        self.connect_database()
+
         self.setup_ui()
         self.order_signal.connect(self.update_order)
 
@@ -330,54 +466,59 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "로봇 이동", f"로봇이 테이블 {table}로 이동합니다.")
 
     def complete_payment(self, table):
+        self.node.update_customer_num_to_zero(table)
         if 1 <= table <= len(self.text_browsers):
             self.text_browsers[table-1].clear()
             self.node.complete_payment(table)
             QMessageBox.information(self, "결제 완료", f"테이블 {table}의 결제가 완료되었습니다.")
+        self.refresh_robot_control_tab()
 
     def show_daily_sales(self):
         daily_sales = self.node.get_daily_sales()
         QMessageBox.information(self, "일일 매출", f"오늘의 총 매출: {daily_sales}원")
 
+    # def show_menu_sales(self):
+    #     try:
+    #         menu_sales = self.node.get_menu_sales()
+    #         self.node.get_logger().info(f"Retrieved menu sales data: {menu_sales}")
+            
+    #         if not menu_sales:
+    #             raise ValueError("메뉴 매출 데이터가 없습니다.")
+
+    #         bean_names, sales = zip(*menu_sales)
+            
+    #         fig, ax = plt.subplots(figsize=(10, 6))
+    #         ax.bar(bean_names, sales)
+    #         ax.set_xlabel('메뉴')
+    #         ax.set_ylabel('매출 (원)')
+    #         ax.set_title('메뉴별 매출')
+    #         plt.xticks(rotation=45, ha='right')
+            
+    #         canvas = FigureCanvas(fig)
+            
+    #         dialog = QWidget()
+    #         layout = QVBoxLayout()
+    #         layout.addWidget(canvas)
+    #         dialog.setLayout(layout)
+    #         dialog.setWindowTitle('메뉴별 매출 그래프')
+    #         dialog.show()
+            
+    #         self.node.get_logger().info("Menu sales graph displayed successfully")
+
+    #     except ValueError as ve:
+    #         self.node.get_logger().error(f"Data error: {ve}")
+    #         QMessageBox.warning(self, "데이터 오류", str(ve))
+    #     except matplotlib.pyplot.error as mpl_error:
+    #         self.node.get_logger().error(f"Matplotlib error: {mpl_error}")
+    #         QMessageBox.critical(self, "그래프 생성 오류", f"그래프를 생성하는 중 오류가 발생했습니다: {mpl_error}")
+    #     except Exception as e:
+    #         self.node.get_logger().error(f"Unexpected error in show_menu_sales: {e}")
+    #         QMessageBox.critical(self, "예상치 못한 오류", f"메뉴별 매출 표시 중 오류 발생: {e}")
+
     def show_menu_sales(self):
-        try:
-            menu_sales = self.node.get_menu_sales()
-            self.node.get_logger().info(f"Retrieved menu sales data: {menu_sales}")
-            
-            if not menu_sales:
-                raise ValueError("메뉴 매출 데이터가 없습니다.")
-
-            bean_names, sales = zip(*menu_sales)
-            
-            fig, ax = plt.subplots(figsize=(10, 6))
-            ax.bar(bean_names, sales)
-            ax.set_xlabel('메뉴')
-            ax.set_ylabel('매출 (원)')
-            ax.set_title('메뉴별 매출')
-            plt.xticks(rotation=45, ha='right')
-            
-            canvas = FigureCanvas(fig)
-            
-            dialog = QWidget()
-            layout = QVBoxLayout()
-            layout.addWidget(canvas)
-            dialog.setLayout(layout)
-            dialog.setWindowTitle('메뉴별 매출 그래프')
-            dialog.show()
-            
-            self.node.get_logger().info("Menu sales graph displayed successfully")
-
-        except ValueError as ve:
-            self.node.get_logger().error(f"Data error: {ve}")
-            QMessageBox.warning(self, "데이터 오류", str(ve))
-        except matplotlib.pyplot.error as mpl_error:
-            self.node.get_logger().error(f"Matplotlib error: {mpl_error}")
-            QMessageBox.critical(self, "그래프 생성 오류", f"그래프를 생성하는 중 오류가 발생했습니다: {mpl_error}")
-        except Exception as e:
-            self.node.get_logger().error(f"Unexpected error in show_menu_sales: {e}")
-            QMessageBox.critical(self, "예상치 못한 오류", f"메뉴별 매출 표시 중 오류 발생: {e}")
-
-
+        menu_sales = self.node.get_menu_sales()
+        sales_message = "\n".join([f"{bean_name}: {total_sales}원" for bean_name, total_sales in menu_sales])
+        QMessageBox.information(self, "메뉴별 매출", sales_message)
 
     def update_order(self, order_data):
         try:
@@ -399,39 +540,28 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.log_error(f"주문 처리 중 오류 발생: {e}")
 
+    # 로봇 제어 탭 버튼 ui ------------------------------------------------------------------------------------------
+    def update_table_buttons(self):
+        for i, button in enumerate(self.table_buttons, 1):
+            table_info = self.node.get_table_info(i)
+            if table_info:
+                customer_num, capacity = table_info
+                button.setText(f"테이블 {i}\n({customer_num}/{capacity})")
+                button.setStyleSheet("""
+                    QPushButton {
+                        text-align: center;
+                        padding: 10px;
+                    }
+                """)
+
+    def refresh_robot_control_tab(self):
+        self.update_table_buttons()
 
     def confirm_order(self, table):
         result = self.node.confirm_order(table)
         QMessageBox.information(self, "주문 확인", result)
+        self.refresh_robot_control_tab()                # 로봇 제어 탭의 버튼 착석 인원 갱신
 
-    def connect_database(self):
-        self.conn = sqlite3.connect('database.db')
-        self.cursor = self.conn.cursor()
-        self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS orders (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            table_number INTEGER NOT NULL,
-            coffee_bean TEXT NOT NULL,
-            quantity INTEGER NOT NULL,
-            time TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-        )
-        ''')
-        self.conn.commit()
-
-    def insert_data(self, table_num, order_info):
-        try:
-            coffee_bean, quantity = order_info.split('x')
-            coffee_bean = coffee_bean.strip()
-            quantity = int(quantity.strip())
-            current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            
-            self.cursor.execute(
-                "INSERT INTO orders (table_number, coffee_bean, quantity, time) VALUES (?, ?, ?, ?)",
-                (table_num, coffee_bean, quantity, current_time)
-            )
-            self.conn.commit()
-        except Exception as e:
-            self.log_error(f"Error inserting data: {e}")
             
 def main(args=None):
     rclpy.init(args=args)

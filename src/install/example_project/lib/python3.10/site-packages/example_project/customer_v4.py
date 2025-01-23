@@ -44,8 +44,6 @@ class TableOrderNode(Node):
         if self.emit_signal is not None:
             self.emit_signal(msg.data)
 
-
-
     def set_emit_signal(self, emit_func):
         self.emit_signal = emit_func
 
@@ -162,7 +160,7 @@ class MainWindow(QMainWindow):
 
     def confirm_people_count(self):
         people_count = self.people_spinbox.value()
-        QMessageBox.information(self, "인원수 확인", f"인원수 {people_count}명이 확인되었습니다.")
+        QMessageBox.information(self, "인원수 확인", f"인원은 {people_count}명 입니다.")
         self.change_page(1)  # 주문 페이지로 이동
 
 
@@ -332,7 +330,7 @@ class MainWindow(QMainWindow):
         try:
             action, table, *_ = message.split(',')
             if action == "confirm_order" and int(table) == self.table_number:
-                QMessageBox.information(self, "주문 접수", "주문이 접수되었습니다.")
+                QMessageBox.information(self, "주문 접수", "주문이 확정되었습니다.")
         except ValueError:
             self.node.get_logger().error(f"Invalid message format: {message}")
 

@@ -515,7 +515,7 @@ class MainWindow(QMainWindow):
     #         self.node.get_logger().error(f"Unexpected error in show_menu_sales: {e}")
     #         QMessageBox.critical(self, "예상치 못한 오류", f"메뉴별 매출 표시 중 오류 발생: {e}")
 
-    def show_menu_sales(self):
+        def show_menu_sales(self):
         menu_sales = self.node.get_menu_sales()
         sales_message = "\n".join([f"{bean_name}: {total_sales}원" for bean_name, total_sales in menu_sales])
         QMessageBox.information(self, "메뉴별 매출", sales_message)
